@@ -3,17 +3,34 @@ import 'package:meals_app/widgets/main_drawer.dart';
 
 class FiltersScreen extends StatefulWidget {
   static const routeName = '/filters';
+  final Function saveFilters;
+  final Map<String,bool> currentFilters;
+
+
+  FiltersScreen(this.currentFilters,this.saveFilters);
+
   @override
   _FiltersScreenState createState() => _FiltersScreenState();
 }
 
 class _FiltersScreenState extends State<FiltersScreen> {
-  noSuchMethod(Invocation i) => super.noSuchMethod(i);
+//  noSuchMethod(Invocation i) => super.noSuchMethod(i);
 
   bool _glutenFree = false;
   bool _vegetarian = false;
   bool _vegan = false;
   bool _lactoseFree = false;
+
+  @override
+  initState(){
+    _glutenFree = widget.currentFilters['gluten'];
+    _lactoseFree = widget.currentFilters['lactose'];
+    _vegan = widget.currentFilters['vegan'];
+    _vegetarian = widget.currentFilters['vegetarian'];
+
+    super.initState();
+  }
+
 
   Widget _buildSwitchListTile(
     String title,
@@ -35,6 +52,17 @@ class _FiltersScreenState extends State<FiltersScreen> {
         appBar: AppBar(
           title: Text("Filters"),
           backgroundColor: Theme.of(context).primaryColor,
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.save),onPressed:(){
+              final _selectedFilters = {
+                'gluten': _glutenFree,
+                'lactose': _lactoseFree,
+                'vegan': _vegan,
+                'vegetarian': _vegetarian,
+              };
+              widget.saveFilters(_selectedFilters);
+            })
+          ],
         ),
         drawer: MainDrawer(),
         body: Column(
@@ -70,8 +98,8 @@ class _FiltersScreenState extends State<FiltersScreen> {
                     },
                   ),
                   _buildSwitchListTile(
-                    'Vegetariane',
-                    'Only include Vegetariane meals',
+                    'Vegetarian',
+                    'Only include Vegetarian meals',
                     _vegetarian,
                     (newValue) {
                       setState(() {
